@@ -122,23 +122,87 @@ Here are some examples of SQL requests to our database:
 
 1. Airline rating based on users' scores for the last month:
 
-   `SELECT a.ID_Airline, Airline_name, ROUND(AVG(Cast(Score as Float)), 1) As Rating FROM Airlines AS a INNER JOIN Feedbacks AS f ON a.ID_Airline = f.ID_Airline WHERE date(f.Date, '+1 month') > (SELECT MIN(Date) FROM Feedbacks) GROUP BY a.ID_Airline ORDER BY Rating DESC`
+   ```sql
+   SELECT a.ID_Airline, Airline_name, ROUND(AVG(Cast(Score as Float)), 1) 
+   AS Rating FROM Airlines 
+   AS a INNER JOIN Feedbacks 
+   AS f ON a.ID_Airline = f.ID_Airline 
+   WHERE date(f.Date, '+1 month') > (SELECT MIN(Date) FROM Feedbacks) 
+   GROUP BY a.ID_Airline 
+   ORDER BY Rating DESC
+   ```
+
+   ​
 
 2. Information about flights of airline with **AA** code:
 
-   `SELECT DISTINCT t.ID_flight, t.Airport_dep, t.Airport_ar, ROUND(Delay_Prediction) AS Delay_Prediction,     a1.City AS City1, t.Scheduled_departure, a2.City AS City2, t.Scheduled_arrivalFROM (    SELECT dep.ID_flight, dep.ID_Airport AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure,         ar.ID_Airport AS Airport_ar, ar.Actual_arrival, ar.Scheduled_arrival    FROM Flights_Airports_dep AS dep    INNER JOIN Flights_Airports_ar AS ar ON dep.rowid = ar.rowid) AS tINNER JOIN Flights AS f ON f.ID_Flight = t.ID_FlightINNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_depINNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_arWHERE f.ID_flight LIKE ‘AA%’GROUP BY f.ID_flightHAVING Delay_prediction <= 0ORDER BY t.Scheduled_departure DESCLIMIT 5`
+   ```sql
+   SELECT DISTINCT t.ID_flight, t.Airport_dep, t.Airport_ar, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City 
+   AS City1, t.Scheduled_departure, a2.City 
+   AS City2, t.Scheduled_arrivalFROM (SELECT dep.ID_flight, dep.ID_Airport 
+   AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure, ar.ID_Airport 
+   AS Airport_ar, ar.Actual_arrival, ar.Scheduled_arrival    
+   FROM Flights_Airports_dep AS dep INNER JOIN Flights_Airports_ar 
+   AS ar ON dep.rowid = ar.rowid) 
+   AS t INNER JOIN Flights AS f ON f.ID_Flight = t.ID_Flight 
+   INNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_dep 
+   INNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_ar WHERE f.ID_flight LIKE ‘AA%’ GROUP BY f.ID_flight HAVING Delay_prediction <= 0 
+   ORDER BY t.Scheduled_departure DESC LIMIT 5
+   ```
+
+   ​
 
 3. Information about **B626** flight:
 
-   `SELECT DISTINCT t.\*, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City AS City1, a2.City AS City2,ID_Author, Date, Score, Recommendation, Class, Content FROM (    SELECT dep.ID_flight, dep.ID_Airport AS Airport_dep, dep.Scheduled_departure,         ar.ID_Airport AS Airport_ar, ar.Scheduled_arrival    FROM Flights_Airports_dep AS dep    INNER JOIN Flights_Airports_ar AS ar ON dep.rowid = ar.rowid) AS tINNER JOIN Flights AS f ON f.ID_Flight = t.ID_FlightINNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_depINNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_arLEFT JOIN Feedbacks AS r ON f.ID_Flight = r.ID_FlightWHERE t.ID_flight = ‘B626’GROUP BY t.Scheduled_departureORDER BY t.Scheduled_departure DESCLIMIT 1`
+   ```sql
+   SELECT DISTINCT t.*, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City 
+   AS City1, a2.City AS City2,ID_Author, Date, Score, Recommendation, Class, Content 
+   FROM (SELECT dep.ID_flight, dep.ID_Airport 
+   AS Airport_dep, dep.Scheduled_departure, ar.ID_Airport 
+   AS Airport_ar, ar.Scheduled_arrival 
+   FROM Flights_Airports_dep AS dep 
+   INNER JOIN Flights_Airports_ar AS ar ON dep.rowid = ar.rowid) 
+   AS t INNER JOIN Flights AS f ON f.ID_Flight = t.ID_Flight 
+   INNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_dep 
+   INNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_ar 
+   LEFT JOIN Feedbacks AS r ON f.ID_Flight = r.ID_Flight 
+   WHERE t.ID_flight = ‘B626’ GROUP BY t.Scheduled_departure 
+   ORDER BY t.Scheduled_departure DESC LIMIT 1
+   ```
+
+   ​
 
 4. List of flights from Denver to New York:
 
-   `SELECT DISTINCT t.\*, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City AS City1, a1.Longitude AS long1, a1.Latitude AS lat1, a2.City AS City2, a2.Longitude AS long2, a2.Latitude AS lat2FROM (    SELECT dep.ID_flight, dep.ID_Airport AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure,         ar.ID_Airport AS Airport_ar, ar.Actual_arrival, ar.Scheduled_arrival    FROM Flights_Airports_dep AS dep    INNER JOIN Flights_Airports_ar AS ar ON dep.rowid = ar.rowid) AS tINNER JOIN Flights AS f ON f.ID_Flight = t.ID_FlightINNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_depINNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_arWHERE a1.City = ‘Denver’ AND a2.City = ‘New York’ORDER BY t.Scheduled_departure DESCLIMIT 5`
+   ```sql
+   SELECT DISTINCT t.*, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City 
+   AS City1, a1.Longitude AS long1, a1.Latitude AS lat1, a2.City 
+   AS City2, a2.Longitude AS long2, a2.Latitude AS lat2 
+   FROM (SELECT dep.ID_flight, dep.ID_Airport AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure, ar.ID_Airport 
+   AS Airport_ar, ar.Actual_arrival, ar.Scheduled_arrival 
+   FROM Flights_Airports_dep AS dep INNER JOIN Flights_Airports_ar 
+   AS ar ON dep.rowid = ar.rowid) AS t INNER JOIN Flights 
+   AS f ON f.ID_Flight = t.ID_Flight INNER JOIN Airports 
+   AS a1 ON a1.ID_Airport = t.Airport_dep INNER JOIN Airports 
+   AS a2 ON a2.ID_Airport = t.Airport_ar WHERE a1.City = ‘Denver’ 
+   AND a2.City = ‘New York’ ORDER BY t.Scheduled_departure DESC LIMIT 5
+   ```
+
+   ​
 
 5. Airline rating by flight delays:
 
-   `SELECT DISTINCT q.Airline_code, Airline_name, q.Avg_delay, q.Avg_predictionFROM (    SELECT f.ID_Flight, substr(f.ID_Flight, 1, 2) AS Airline_code,         ROUND(AVG(JulianDay(ar.Actual_arrival) - JulianDay(ar.Scheduled_arrival)) \* 24 * 60) AS Avg_delay,        ROUND(AVG(Delay_prediction)) AS Avg_prediction    FROM Flights AS f    INNER JOIN Flights_Airports_ar AS ar ON f.ID_Flight = ar.ID_Flight    WHERE time(ar.Actual_arrival) != '00:00:00' AND (time(ar.Actual_arrival) - time(ar.Scheduled_arrival)) BETWEEN -12 AND 12    GROUP BY substr(f.ID_Flight, 1, 2)    HAVING Avg_delay <= 10) AS qINNER JOIN Airplanes_Flights AS af ON q.ID_Flight = af.ID_FlightINNER JOIN Airplanes AS p ON af.ID_Airplane = p.ID_AirplaneINNER JOIN Airlines AS l ON p.ID_Airline = l.ID_AirlineORDER BY q.Avg_delay`
+   ```sql
+   SELECT DISTINCT q.Airline_code, Airline_name, q.Avg_delay, q.Avg_prediction FROM (SELECT f.ID_Flight, substr(f.ID_Flight, 1, 2) 
+   AS Airline_code, ROUND(AVG(JulianDay(ar.Actual_arrival) - JulianDay(ar.Scheduled_arrival)) \* 24 * 60) 
+   AS Avg_delay, ROUND(AVG(Delay_prediction)) AS Avg_prediction
+   FROM Flights AS f INNER JOIN Flights_Airports_ar 
+   AS ar ON f.ID_Flight = ar.ID_Flight WHERE time(ar.Actual_arrival) != '00:00:00' 
+   AND (time(ar.Actual_arrival) - time(ar.Scheduled_arrival)) BETWEEN -12 AND 12 GROUP BY substr(f.ID_Flight, 1, 2) HAVING Avg_delay <= 10) 
+   AS q INNER JOIN Airplanes_Flights AS af ON q.ID_Flight = af.ID_Flight 
+   INNER JOIN Airplanes AS p ON af.ID_Airplane = p.ID_Airplane 
+   INNER JOIN Airlines AS l ON p.ID_Airline = l.ID_Airline ORDER BY q.Avg_delay
+   ```
 
    ​
 
