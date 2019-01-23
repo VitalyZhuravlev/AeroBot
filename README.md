@@ -146,7 +146,8 @@ Here are some examples of SQL requests to our database:
    AS ar ON dep.rowid = ar.rowid) 
    AS t INNER JOIN Flights AS f ON f.ID_Flight = t.ID_Flight 
    INNER JOIN Airports AS a1 ON a1.ID_Airport = t.Airport_dep 
-   INNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_ar WHERE f.ID_flight LIKE ‘AA%’ GROUP BY f.ID_flight HAVING Delay_prediction <= 0 
+   INNER JOIN Airports AS a2 ON a2.ID_Airport = t.Airport_ar WHERE f.ID_flight LIKE ‘AA%’ 
+   GROUP BY f.ID_flight HAVING Delay_prediction <= 0 
    ORDER BY t.Scheduled_departure DESC LIMIT 5
    ```
 
@@ -178,7 +179,8 @@ Here are some examples of SQL requests to our database:
    SELECT DISTINCT t.*, ROUND(Delay_Prediction) AS Delay_Prediction, a1.City 
    AS City1, a1.Longitude AS long1, a1.Latitude AS lat1, a2.City 
    AS City2, a2.Longitude AS long2, a2.Latitude AS lat2 
-   FROM (SELECT dep.ID_flight, dep.ID_Airport AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure, ar.ID_Airport 
+   FROM (SELECT dep.ID_flight, dep.ID_Airport 
+   AS Airport_dep, dep.Actual_departure, dep.Scheduled_departure, ar.ID_Airport 
    AS Airport_ar, ar.Actual_arrival, ar.Scheduled_arrival 
    FROM Flights_Airports_dep AS dep INNER JOIN Flights_Airports_ar 
    AS ar ON dep.rowid = ar.rowid) AS t INNER JOIN Flights 
@@ -198,7 +200,8 @@ Here are some examples of SQL requests to our database:
    AS Avg_delay, ROUND(AVG(Delay_prediction)) AS Avg_prediction
    FROM Flights AS f INNER JOIN Flights_Airports_ar 
    AS ar ON f.ID_Flight = ar.ID_Flight WHERE time(ar.Actual_arrival) != '00:00:00' 
-   AND (time(ar.Actual_arrival) - time(ar.Scheduled_arrival)) BETWEEN -12 AND 12 GROUP BY substr(f.ID_Flight, 1, 2) HAVING Avg_delay <= 10) 
+   AND (time(ar.Actual_arrival) - time(ar.Scheduled_arrival)) BETWEEN -12 AND 12 
+   GROUP BY substr(f.ID_Flight, 1, 2) HAVING Avg_delay <= 10) 
    AS q INNER JOIN Airplanes_Flights AS af ON q.ID_Flight = af.ID_Flight 
    INNER JOIN Airplanes AS p ON af.ID_Airplane = p.ID_Airplane 
    INNER JOIN Airlines AS l ON p.ID_Airline = l.ID_Airline ORDER BY q.Avg_delay
