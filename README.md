@@ -195,7 +195,8 @@ Here are some examples of SQL requests to our database:
 5. Airline rating by flight delays:
 
    ```sql
-   SELECT DISTINCT q.Airline_code, Airline_name, q.Avg_delay, q.Avg_prediction FROM (SELECT f.ID_Flight, substr(f.ID_Flight, 1, 2) 
+   SELECT DISTINCT q.Airline_code, Airline_name, q.Avg_delay, q.Avg_prediction 
+   FROM (SELECT f.ID_Flight, substr(f.ID_Flight, 1, 2) 
    AS Airline_code, ROUND(AVG(JulianDay(ar.Actual_arrival) - JulianDay(ar.Scheduled_arrival)) \* 24 * 60) 
    AS Avg_delay, ROUND(AVG(Delay_prediction)) AS Avg_prediction
    FROM Flights AS f INNER JOIN Flights_Airports_ar 
